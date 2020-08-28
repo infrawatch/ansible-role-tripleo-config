@@ -1,7 +1,7 @@
 ---
 - name: set enable_sensubility fact
   set_fact:
-    enable_sensubility: "{{ collectd_sensubility_enable }}"
+    enable_sensubility: "{{ collectd_enable_sensubility }}"
 
 - name: Configure rsyslog for container healthchecks
   when:
@@ -37,3 +37,16 @@
           service:
             name: rsyslog
             state: restarted
+
+- name: "Collectd configuration"
+  become: true
+  when:
+    - step|int == 1
+  block:
+    - name: "Generate the collectd config files"
+      include_role:
+        name: collectd_config
+
+    - name: "Update include dir for configs"
+      command: |
+        sed -i 's#{{ collectd_conf_output_dir }}#/etc/collectd.d/#g' {{ collectd_conf_output_dir }}/../collectd.conf
