@@ -73,7 +73,7 @@ collectd_extra_plugins: []
 
 # Corresponds to CollectdServer in THT
 # Address of remote collectd server to which we will send metrics.
-collectd_server: 
+collectd_server:
 
 # Corresponds to CollectdServerPort in THT
 # Port on remote collectd server to which we will send metrics.
