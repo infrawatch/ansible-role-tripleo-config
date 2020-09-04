@@ -1,0 +1,32 @@
+os: linux
+language: python
+python: "2.7"
+
+git:
+  depth: false
+
+# Install ansible
+addons:
+  apt:
+    update: true
+    packages:
+      - python-pip
+
+services:
+  - docker
+
+install:
+  # Install ansible
+  - pip install ansible ansible-lint
+
+  # Check ansible version
+  - ansible --version
+
+  # Create ansible.cfg with correct roles_path
+  - printf '[defaults]\nroles_path=../' >ansible.cfg
+
+script:
+  - ansible-lint
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
