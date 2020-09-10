@@ -9,7 +9,7 @@
 - name: Set up conditionals
   set_fact:
     amqp_connection: "{{ (collectd_connection_type == 'amqp1')|default(false) }}"
-    amqp_default_connection: "{{ (collectd_plugin_amqp1_host == 'nil')|default(false) }}"
+    amqp_default_connection: "{{ (collectd_amqp_host == 'nil')|default(false) }}"
     amqp_default_interval: "{{ (collectd_amqp_interval|int == -666)|default(false) }}"
     collectd_connection: "{{ (collectd_connection_type == 'network')|default(false) }}"
     sensubility_needs_sudo: "{{ (collectd_sensubility_exec_sudo_rule != '')| default(false) }}"
@@ -68,10 +68,10 @@
     # This might have to be set up as a list of dicts, depending on how it's
     # treated in collectd_config
     collectd_plugin_network_server: "{{ collectd_server }}"
-    collectd_plugin_network_server_port: "{{ tripleo_collectd_port }}"
-    collectd_plugin_network_server_username: "{{ tripleo_collectd_username }}"
-    collectd_plugin_network_server_password: "{{ tripleo_collectd_password }}"
-    collectd_plugin_network_server_securitylevel: "{{ tripleo_collectd_securitylevel }}"
+    collectd_plugin_network_server_port: "{{ collectd_port }}"
+    collectd_plugin_network_server_username: "{{ collectd_username }}"
+    collectd_plugin_network_server_password: "{{ collectd_password }}"
+    collectd_plugin_network_server_securitylevel: "{{ collectd_securitylevel }}"
 
 - name: Enable sqlalchemy
   # TODO: check does the puppet tripleo::...::collectd::enable_sqlalchemy role
@@ -85,7 +85,7 @@
 - name: "Configure collectd to run collectd-sensubility via collectd-exec"
   set_fact:
     todo: true
-  when: tripleo_collectd_enable_sensubility
+  when: collectd_enable_sensubility
 # This can probably be called enable plugin, or create plugin list, and can
 # enable plugins based whether STF, etc is enabled
 

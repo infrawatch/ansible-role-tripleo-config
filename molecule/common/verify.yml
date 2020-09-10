@@ -1,0 +1,55 @@
+---
+- name: "Common Verify tasks"
+  hosts: collectd-test
+  tasks:
+    - name: Check for files in conf output dir
+      find:
+        paths: "{{ collectd_conf_output_dir }}"
+        patterns: '*.conf'
+      register: output
+      failed_when: output.files|length == 0
+
+    - name: "Check for collectd.conf"
+      find:
+        paths: "{{ collectd_conf_output_dir }}/../"
+        patterns: collectd.conf
+      register: conf
+      failed_when: conf.files|length != 1
+
+    - name: "Check what plugins were enabled."
+      command: |
+        ls {{ collectd_conf_output_dir  }}
+      register: plugins
+      failed_when: plugins.stdout_lines | length < 1
+
+    - name: "Debug -- list of plugins, one per line"
+      debug:
+        var: plugins.stdout_lines
+
+    - name: "Get list of plugins without .conf"
+      set_fact:
+        plugin_list: "{{ plugins.stdout_lines | map('regex_replace', '(.*).conf', '\\1' ) | list }}"
+
+    - name: "debug -- plugin list"
+      debug:
+        var: plugin_list
+
+    - name: "(Re)start collectd service"
+      block:
+        - name: "Kill running collectd process"
+          command:
+            pkill -e -c collectd
+          ignore_errors: true
+
+        - name: "Start collectd"
+          command:
+            /usr/sbin/collectd -C /etc/collectd.conf
+
+- hosts: localhost
+  tasks:
+    - name: "Run the collectd test from STF functional-tests"
+      include_role:
+        name: functional_tests
+        tasks_from: test_collectd
+      vars:
+        collectd_container_name: 'collectd-test'

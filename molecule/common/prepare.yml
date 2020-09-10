@@ -1,0 +1,7 @@
+---
+- name: "Add config.json for collectd test container"
+  hosts: collectd-test
+  tasks:
+    - name: "Nothing to prepare currently"
+      assert:
+        that: true

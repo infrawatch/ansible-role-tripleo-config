@@ -1,0 +1,40 @@
+---
+dependency:
+  name: galaxy
+  options:
+    role-file: molecule/common/requirements.yml
+driver:
+  name: podman
+platforms:
+  - name: collectd-test
+    image: docker.io/tripleomaster/centos-binary-collectd:current-tripleo-rdo
+provisioner:
+  name: ansible
+  log: true
+  playbooks:
+    prepare: ../common/prepare.yml
+    verify: ../common/verify.yml
+    cleanup: ../common/cleanup.yml
+  inventory:
+    host_vars:
+      collectd-test:
+        collectd_conf_output_dir: "/etc/collectd.d/"
+lint: |
+  yamllint .
+  ansible-lint
+
+verifier:
+  name: ansible
+
+scenario:
+  name: default
+  test_sequence:
+    - lint
+    - destroy
+    - dependency
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy
+    - cleanup
