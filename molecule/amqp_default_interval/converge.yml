@@ -1,0 +1,13 @@
+---
+- name: Converge
+  hosts: collectd-test
+  tasks:
+    - include_role:
+        name: '{{ playbook_dir }}/../../../tripleo-collectd-ansible-role'
+      vars:
+        collectd_conf_output_dir: "/etc/collectd.d/"
+        deploy_stage: 'configure_collectd'
+        step: 1
+        # This is not the right things to put here... need to check tripleo_collectd
+        collectd_connection_type: 'amqp1'
+        collectd_amqp_interval: -666
