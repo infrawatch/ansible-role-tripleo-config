@@ -1,5 +1,6 @@
 ---
-# NOTE: Anything that is in here is done every time you call the tripleo_role
+# NOTE: Anything that is in here is done every time you call the
+# tripleo_role
 # This means you should add variable parsing and setting here.
 
 - name: Report what deployment stage we're at
@@ -18,7 +19,6 @@
     collectd_connection: "{{ (collectd_connection_type == 'network')|default(false) }}"
     sensubility_needs_sudo: "{{ (collectd_sensubility_exec_sudo_rule != '')| default(false) }}"
 
-# TODO: Add default for enable_stf, enable_sqlalchemy_collectd, enable_sensubility,
 - debug:
     var: "{{ item }}"
   with_items:
@@ -29,7 +29,6 @@
     - sensubility_needs_sudo
     - collectd_extra_plugins
 
-#TODO: set up this in default/main.yml, and then reset it to "" if enable_stf_plugin
 - name: "Update plugin list"
   set_fact:
     collectd_extra_plugins: "{{ (collectd_extra_plugins + 'cpu df load connectivity intel_rdt ipmi procevent'.split() ) | unique }}"
@@ -93,14 +92,38 @@
 
 - name: Set up collectd connection to external collectd instance
   when: collectd_connection
-  set_fact:
-    # This might have to be set up as a list of dicts, depending on how it's
-    # treated in collectd_config
-    collectd_plugin_network_server: "{{ collectd_server }}"
-    collectd_plugin_network_server_port: "{{ collectd_port }}"
-    collectd_plugin_network_server_username: "{{ collectd_username }}"
-    collectd_plugin_network_server_password: "{{ collectd_password }}"
-    collectd_plugin_network_server_securitylevel: "{{ collectd_securitylevel }}"
+  block:
+    - name: "Add network to the list of plugins to enable"
+      set_fact:
+        collectd_plugins: "{{ collectd_plugins + ['network'] | unique }}"
+
+    - debug:
+        msg: "Collectd plugin list has been updated, the following plugins will be enabled: {{ collectd_plugins }}"
+
+    - name: "Create the collectd network config."
+      when: collectd_server != ''
+      block:
+        - name: "Populate the initial config for network server."
+          set_fact:
+            collectd_plugin_network_server:
+              name: "{{ collectd_server }}"
+              port: "{{ collectd_server_port | default(omit) }}"
+              username: "{{ collectd_username | default(omit) }}"
+              password: "{{ collectd_password | default(omit) }}"
+              securitylevel: "{{ collectd_security_level }}"
+
+        - name: "Show the (initial) network server config (may contain empty values which need to be removed)."
+          debug:
+            var: collectd_plugin_network_server
+
+        - name: "Filter out the empty string values from the network server config"
+          set_fact:
+            collectd_plugin_network_server:
+              - '{{ collectd_plugin_network_server | dict2items | rejectattr("value", "equalto", "") | list | items2dict }}'
+
+        - name: "Show the updated network server config, which has empty values removed."
+          debug:
+            var: collectd_plugin_network_server
 
 - name: Enable sqlalchemy
   # TODO: check does the puppet tripleo::...::collectd::enable_sqlalchemy role
@@ -114,7 +137,7 @@
 - name: "Configure collectd to run collectd-sensubility via collectd-exec"
   set_fact:
     todo: true
-  when: "{{ collectd_enable_sensubility }}"
+  when: collectd_enable_sensubility
 # This can probably be called enable plugin, or create plugin list, and can
 # enable plugins based whether STF, etc is enabled
 

@@ -1,0 +1,29 @@
+---
+- name: Converge
+  hosts: collectd-test
+  tasks:
+    - include_role:
+        name: '{{ playbook_dir }}/../../../tripleo-collectd-ansible-role'
+      vars:
+        collectd_conf_output_dir: "/etc/collectd.d/"
+        deploy_stage: 'configure_collectd'
+        step: 1
+        collectd_connection_type: 'network'
+        collectd_server: '192.168.42.2'
+        # TODO: remove this when logging is enabled by TripleO
+        collectd_extra_plugins:
+          - logfile
+
+- name: Converge collectd-server
+  hosts: collectd-server
+  tasks:
+    - include_role:
+        name: collectd_config
+      vars:
+        collectd_conf_output_dir: "/etc/collectd.d/"
+        collectd_plugin_network_listen:
+          - address: "192.168.42.2"
+        collectd_plugins:
+          - logfile
+          - network
+          - unixsock
