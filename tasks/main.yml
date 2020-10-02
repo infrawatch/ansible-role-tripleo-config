@@ -31,11 +31,11 @@
 
 - name: "Update plugin list"
   set_fact:
-    collectd_extra_plugins: "{{ (collectd_extra_plugins + 'cpu df load connectivity intel_rdt ipmi procevent'.split() ) | unique }}"
+    collectd_plugins: "{{ (collectd_plugins + 'cpu df load connectivity intel_rdt ipmi procevent'.split() ) | unique }}"
   when: enable_stf|bool
 
 - debug:
-    var: collectd_extra_plugins
+    var: collectd_plugins
 
 - name: "Update plugins list so logfile will be enabled"
   set_fact:
