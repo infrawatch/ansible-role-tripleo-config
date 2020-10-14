@@ -37,6 +37,10 @@
 - debug:
     var: collectd_extra_plugins
 
+- name: "Update plugins list so logfile will be enabled"
+  set_fact:
+    collectd_plugins: "{{ ( collectd_plugins + ['logfile'] ) }}"
+
 - name: Set up amqp connection to collectd
   when: amqp_connection
   block:

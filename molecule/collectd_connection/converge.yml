@@ -10,9 +10,6 @@
         step: 1
         collectd_connection_type: 'network'
         collectd_server: '192.168.42.2'
-        # TODO: remove this when logging is enabled by TripleO
-        collectd_extra_plugins:
-          - logfile
 
 - name: Converge collectd-server
   hosts: collectd-server

@@ -20,7 +20,9 @@
       command: |
         ls {{ collectd_conf_output_dir  }}
       register: plugins
-      failed_when: plugins.stdout_lines | length < 1
+      failed_when: >
+        ( plugins.stdout_lines | length < 1 ) or
+        ( 'logfile.conf' not in plugins.stdout_lines )
 
     - name: "Debug -- list of plugins, one per line"
       debug:
@@ -44,6 +46,23 @@
         - name: "Start collectd"
           command:
             /usr/sbin/collectd -C /etc/collectd.conf
+
+    - name: "Get logfile path"
+      shell:
+        grep "File" {{ collectd_conf_output_dir }}/logfile.conf | awk '{ print $NF }'
+      register: logfile_path
+
+    - name: "Make sure there is a directory for the logfile to live in since collectd doesn't seem to create this by default"
+      stat:
+        path: "{{ logfile_path.stdout | regex_replace('\"', '') | dirname }}"
+      register: logfile_stat
+      failed_when: not logfile_stat.stat.exists
+
+    - name: "Make sure the logfile is created"
+      stat:
+        path: "{{ logfile_path.stdout | regex_replace('\"', '') }}"
+      register: logfile_stat
+      failed_when: not logfile_stat.stat.exists
 
 - hosts: localhost
   tasks:
