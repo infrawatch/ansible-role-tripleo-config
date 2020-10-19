@@ -12,7 +12,7 @@
 
     - name: "Check that default interval was unchanged"
       command:
-        grep "Interval" {{ collectd_conf_output_dir }}
+        grep "Interval" {{ collectd_conf_output_dir }}/amqp1.conf
       register: interval
       failed_when:
-        - "{{ interval.stdout | length != 0 }}"
+        - "{{ ( interval.stdout | length != 0 ) or ( interval.stderr_lines | length != 0 ) }}"
