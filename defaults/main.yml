@@ -1,0 +1,232 @@
+---
+# Corresponds to EndpointMap in THT
+# Mapping of service endpoint -> protocol. Typically set via parameter_defaults
+# in the resource registry.
+endpoint_map: {}
+
+# Corresponds to ServiceData in THT
+# Dictionary packing service data
+service_data: {}
+
+# Corresponds to ServiceNetMap in THT
+# Mapping of service_name -> network name. Typically set via parameter_defaults
+# in the resource registry.  This mapping overrides those in
+# ServiceNetMapDefaults.
+service_net_map: {}
+
+# Corresponds to DefaultPasswords in THT
+default_passwords: {}
+
+# Corresponds to RoleName in THT
+# Role name on which the service is applied
+role_name:
+
+# Corresponds to RoleParameters in THT
+# Parameters specific to the role
+role_parameters: {}
+
+# Corresponds to KeystoneRegion in THT
+# Keystone region for endpoint
+keystone_region: regionOne
+
+# Corresponds to MetricsQdrPort in THT
+# Service name or port number on which the qdrouterd will accept connections.
+metrics_qdr_port: 5666
+
+# Corresponds to MetricsQdrUsername in THT
+# Username which should be used to authenticate to the deployed qdrouterd.
+metrics_qdr_username: guest
+
+# Corresponds to MetricsQdrPassword in THT
+# Password which should be used to authenticate to the deployed qdrouterd.
+metrics_qdr_password: guest
+
+# Corresponds to MonitoringSubscriptionCollectd in THT
+monitoring_subscription_collectd: overcloud-collectd
+
+# Corresponds to CollectdConnectionType in THT
+# Define which write plugin should collectd use. Currently supported are 'amqp1',
+# 'network' and 'gnocchi'.
+collectd_connection_type: amqp1
+
+# Corresponds to CollectdDefaultPollingInterval in THT
+# Controls how often registered read functions are called and with that the
+# resolution of the collected data. This value can be overridden per plugin(per
+# role) by setting "::collectd::plugin::<plugin_name>::interval" key in
+# ExtraConfig(<role_name>ExtraConfig).
+collectd_default_polling_interval: 120
+
+# Corresponds to CollectdDefaultPlugins in THT
+# List of collectd plugins to activate on all overcloud hosts.  See the
+# documentation for the puppet-collectd module for a list plugins supported by
+# the module (https://github.com/voxpupuli/puppet-collectd). Set this key to
+# override the default list of plugins.  Use CollectdExtraPlugins if you want to
+# load additional plugins without overriding the defaults.
+collectd_default_plugins: ['cpu', 'df', 'disk', 'hugepages', 'interface', 'load', 'memory', 'processes', 'unixsock', 'uptime']
+
+# Corresponds to CollectdExtraPlugins in THT
+# List of collectd plugins to activate on all overcloud hosts.  See the
+# documentation for the puppet-collectd module for a list plugins supported by
+# the module (https://github.com/voxpupuli/puppet-collectd). Set this key to load
+# plugins in addition to those in CollectdDefaultPlugins.
+collectd_extra_plugins: []
+
+# Corresponds to CollectdServer in THT
+# Address of remote collectd server to which we will send metrics.
+collectd_server: 
+
+# Corresponds to CollectdServerPort in THT
+# Port on remote collectd server to which we will send metrics.
+collectd_server_port: 25826
+
+# Corresponds to CollectdUsername in THT
+# Username for authenticating to the remote collectd server. The default is to
+# not configure any authentication.
+collectd_username:
+
+# Corresponds to CollectdPassword in THT
+# Password for authenticating to the remote collectd server. The default is to
+# not configure any authentication.
+collectd_password:
+
+# Corresponds to CollectdSecurityLevel in THT
+# Security level setting for remote collectd connection. If it is set to Sign or
+# Encrypt the CollectdPassword and CollectdUsername parameters need to be set.
+collectd_security_level: None
+
+# Corresponds to EnableSQLAlchemyCollectd in THT
+# Set to true to enable the SQLAlchemy-collectd server plugin
+enable_sqlalchemy_collectd: False
+
+# Corresponds to CollectdSQLAlchemyLogMessages in THT
+# set to "debug" to enable message logging.
+collectd_sqlalchemy_log_messages: info
+
+# Corresponds to CollectdSQLAlchemyBindHost in THT
+# hostname for SQLAlchemy-collectd plugin to bind on.  defaults to localhost.
+collectd_sqlalchemy_bind_host: localhost
+
+# Corresponds to CollectdAmqpHost in THT
+# Hostname or IP address of the AMQP 1.0 intermediary.
+collectd_amqp_host: nil
+
+# Corresponds to CollectdAmqpPort in THT
+# Service name or port number on which the AMQP 1.0 intermediary accepts
+# connections. This argument must be a string, even if the numeric form is used.
+collectd_amqp_port: 5666
+
+# Corresponds to CollectdAmqpUser in THT
+# User part of credentials used to authenticate to the AMQP 1.0 intermediary.
+collectd_amqp_user: guest
+
+# Corresponds to CollectdAmqpPassword in THT
+# Password part of credentials used to authenticate to the AMQP 1.0 intermediary.
+collectd_amqp_password: guest
+
+# Corresponds to CollectdAmqpTransportName in THT
+# Name of the AMQP 1.0 transport.
+collectd_amqp_transport_name: metrics
+
+# Corresponds to CollectdAmqpAddress in THT
+# This option specifies the prefix for the send-to value in the message.
+collectd_amqp_address: collectd
+
+# Corresponds to CollectdAmqpInstances in THT
+# Hash of hashes. Each inner hash represent Instance block in plugin
+# configuration file. Key of outter hash represents instance name. The 'address'
+# value concatenated with the 'name' given will be used as the send-to address
+# for communications over the messaging link.
+collectd_amqp_instances: {}
+
+# Corresponds to CollectdAmqpRetryDelay in THT
+# When the AMQP 1.0 connection is lost, defines the time in seconds to wait
+# before attempting to reconnect.
+collectd_amqp_retry_delay: 1
+
+# Corresponds to CollectdAmqpInterval in THT
+# Interval on which metrics should be sent to AMQP intermediary. If not set the
+# default for all collectd plugins is used.
+collectd_amqp_interval: -666
+
+# Corresponds to CollectdEnableSensubility in THT
+# Set to true if sensubility should be executed by exec plugin.
+collectd_enable_sensubility: False
+
+# Corresponds to CollectdSensubilityExecSudoRule in THT
+# Given rule will be created in /etc/sudoers.d for sensubility to enable it
+# calling restricted commands via sensubility executor.
+collectd_sensubility_exec_sudo_rule:
+
+# Corresponds to CollectdSensubilityLogLevel in THT
+# Use for override the default logging level (WARNING).
+collectd_sensubility_log_level: WARNING
+
+# Corresponds to CollectdSensubilityConnection in THT
+# URL to Sensu sever side
+collectd_sensubility_connection: amqp://sensu:sensu@localhost:5672//sensu
+
+# Corresponds to CollectdSensubilityKeepaliveInterval in THT
+# Interval in seconds for sending keepalive messages to Sensu server side.
+collectd_sensubility_keepalive_interval: 20
+
+# Corresponds to CollectdSensubilityTmpDir in THT
+# Path to temporary directory which is used for creation of check scripts.
+collectd_sensubility_tmp_dir: /var/tmp/collectd-sensubility-checks
+
+# Corresponds to CollectdSensubilityShellPath in THT
+# Path to shell used for executing check scripts.
+collectd_sensubility_shell_path: /usr/bin/sh
+
+# Corresponds to CollectdSensubilityWorkerCount in THT
+# Number of goroutines spawned for executing check scripts.
+collectd_sensubility_worker_count: 2
+
+# Corresponds to CollectdSensubilityChecks in THT
+# JSON formated definition of standalone checks to be scheduled on client side.
+collectd_sensubility_checks: {}
+
+# Corresponds to CollectdEnableContainerHealthCheck in THT
+# Set to false if container health check should not be defined and attached to
+# CollectdEnableContainerHealthCheck.
+collectd_enable_container_health_check: True
+
+# Corresponds to CollectdContainerHealthCheckCommand in THT
+collectd_container_health_check_command: >
+  output=""
+  while read line ; do
+    i=$(echo $line | awk '//{gsub(/:/, "", $0); print $5}')
+    log=$(echo $line | awk '{split($0,a,/:\s+Error:\s+/); print a[2]}')
+    log=${log:0:-1}
+    output+=" ; ${i}: ${log}"
+  done < <(egrep "^[a-zA-Z]{3}\s+[0-9]{2}\s+[0-9\:]{8}\s+.*\s+.*:\s+[Ee]rror\:" /var/log/collectd/healthchecks.log)
+  truncate -s0 /var/log/collectd/healthchecks.log
+  if [ ! -z "${output}" ]; then
+    echo ${output:3} && exit 2;
+  fi
+
+# Corresponds to CollectdContainerHealthCheckInterval in THT
+# The frequency in seconds the docker health check is executed.
+collectd_container_health_check_interval: 10
+
+# Corresponds to CollectdContainerHealthCheckHandlers in THT
+# The Sensu event handler to use for events created by the docker health check.
+collectd_container_health_check_handlers: []
+
+# Corresponds to CollectdContainerHealthCheckOccurrences in THT
+# The number of event occurrences before sensu-plugin-aware handler should take
+# action.
+collectd_container_health_check_occurrences: 3
+
+# Corresponds to CollectdContainerHealthCheckRefresh in THT
+# The number of seconds sensu-plugin-aware handlers should wait before taking
+# second action.
+collectd_container_health_check_refresh: 90
+
+# Corresponds to EnableSTF in THT
+# Set to true to enable configuration for STF client.
+enable_stf: False
+
+# Corresponds to CollectdEnableMcelog in THT
+# Set to true to enable mcelog
+collectd_enable_mcelog: False
+
