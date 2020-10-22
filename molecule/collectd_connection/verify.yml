@@ -30,7 +30,7 @@
       command:
         cat {{ collectd_conf_output_dir }}/network.conf
       register: conf
-      changed_when: True
+      changed_when: False
 
     - debug:
        var: conf.stdout
