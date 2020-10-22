@@ -1,11 +1,8 @@
 skip_list:
    - '102'  # No Jinja2 in when
    - '106'  # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
-   - '208'  # File permissions not mentioned
-   - '301'  # Commands should not change things if nothing needs doing
    - '303'  # systemctl used in place of systemd module
-   - '306'  # Shells that use pipes should set the pipefail option 
-   - '602'  # Don't compare to empty string
    - '701'  # Role info should contain platforms
 warn_list:
-   - '502'  # All tasks should be named
+   - '301'  # Commands should not change things if nothing needs doing
+   - '602'  # Don't compare to empty string
