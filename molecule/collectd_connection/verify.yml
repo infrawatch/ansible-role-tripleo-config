@@ -69,9 +69,9 @@
       retries: 3
       delay: 5
       register: plugins
-      until: plugins.rc == 0
+      until: plugins.stdout_lines | length > 0
       changed_when: False
-      failed_when: ( plugins.stdout_lines|length == 0 ) or ( plugins.stderr | length > 0 )
+      failed_when: ( plugins.stderr | length > 0 ) or ( plugins.rc != 0 )
 
     - name: "Make sure the metrics on collectd-server are from collectd-test"
       shell: |
