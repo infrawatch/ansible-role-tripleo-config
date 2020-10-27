@@ -105,7 +105,7 @@
         msg: "Collectd plugin list has been updated, the following plugins will be enabled: {{ collectd_plugins }}"
 
     - name: "Create the collectd network config."
-      when: collectd_server != ''
+      when: collectd_server | length != 0
       block:
         - name: "Populate the initial config for network server."
           set_fact:

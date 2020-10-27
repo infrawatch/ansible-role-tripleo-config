@@ -229,4 +229,3 @@ enable_stf: False
 # Corresponds to CollectdEnableMcelog in THT
 # Set to true to enable mcelog
 collectd_enable_mcelog: False
-

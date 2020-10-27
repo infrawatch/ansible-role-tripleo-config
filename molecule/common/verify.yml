@@ -20,6 +20,7 @@
       command: |
         ls {{ collectd_conf_output_dir  }}
       register: plugins
+      changed_when: False
       failed_when: >
         ( plugins.stdout_lines | length < 1 ) or
         ( 'logfile.conf' not in plugins.stdout_lines )
@@ -48,9 +49,11 @@
             /usr/sbin/collectd -C /etc/collectd.conf
 
     - name: "Get logfile path"
-      shell:
+      shell: |
+        set -o pipefail
         grep "File" {{ collectd_conf_output_dir }}/logfile.conf | awk '{ print $NF }'
       register: logfile_path
+      changed_when: False
 
     - name: "Make sure there is a directory for the logfile to live in since collectd doesn't seem to create this by default"
       stat:
