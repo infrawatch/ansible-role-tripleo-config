@@ -75,3 +75,4 @@
         tasks_from: test_collectd
       vars:
         collectd_container_name: 'collectd-test'
+        container_bin: docker

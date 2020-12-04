@@ -4,7 +4,7 @@ dependency:
   options:
     role-file: molecule/common/requirements.yml
 driver:
-  name: podman
+  name: docker
 platforms:
   - name: collectd-test
     image: docker.io/tripleomaster/centos-binary-collectd:current-tripleo-rdo
