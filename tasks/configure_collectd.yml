@@ -13,7 +13,7 @@
     amqp_default_connection: "{{ (collectd_amqp_host == 'nil')|default(false) }}"
     amqp_default_interval: "{{ (collectd_amqp_interval|int == -666)|default(false) }}"
     collectd_connection: "{{ (collectd_connection_type == 'network')|default(false) }}"
-    sensubility_needs_sudo: "{{ (collectd_sensubility_exec_sudo_rule | length > 0)| default(false) }}"
+    sensubility_needs_sudo: "{{ (collectd_sensubility_exec_sudo_rule != 'nil' )| default(false) }}"
 
 - debug:
     var: "{{ item }}"
@@ -49,35 +49,16 @@
         collectd_plugin_amqp1_address: "{{ collectd_amqp_address }}"
         collectd_plugin_amqp1_instances: "{{ collectd_amqp_instances }}"
         collectd_plugin_amqp1_retry_delay: "{{ collectd_amqp_retry_delay }}"
+
     - name: "Set the interval for the amqp1 plugin"
       when: "{{ not amqp_default_interval }}"
       set_fact:
         collectd_plugin_amqp1_interval: "{{ collectd_amqp_interval }}"
-#       - if:
-#         - amqp_default_connection
-#         - tripleo::profile::base::metrics::collectd::amqp_host:
-#             str_replace:
-#               template:
-#                 "%{hiera('$NETWORK')}"
-#               params:
-#                 $NETWORK:
-#                   get_param:
-#                     - ServiceNetMap
-#                     - str_replace:
-#                         template: "ROLENAMEMetricsQdrNetwork"
-#                         params:
-#                           ROLENAME: {get_param: RoleName}
-    # TODO(efoley): This can be tested at the moment, the default/lookup case
-    # above needs additional work (i.e. hieradata lookup)
+
     - name: "Use the default values for the AMQP connection"
       when: "{{ amqp_default_connection }}"
       set_fact:
-        # TODO: Figure out what to do with this, maybe do the hiera data
-        # lookup here or in THT
-        # TODO: Re-enable the lookup
-        # This should look up {{ role_name }}MetricsQdrNetwork
-        # collectd_plugin_amqp1_host: "{{ lookup('hiera', role_name + 'MetricsQdrNetwork') }}"
-        collectd_plugin_amqp1_host: "RoleNameMetricsQdrNetwork"
+        collectd_plugin_amqp1_host: "{{ lookup('vars', service_net_map[(tripleo_role_name + 'MetricsQdrNetwork') | snake_case] + '_ip' ) }}"
         collectd_plugin_amqp1_port: "{{ metrics_qdr_port }}"
         collectd_plugin_amqp1_user: "{{ metrics_qdr_username }}"
         collectd_plugin_amqp1_password: "{{ metrics_qdr_password }}"

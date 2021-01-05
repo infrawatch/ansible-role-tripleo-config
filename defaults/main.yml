@@ -155,7 +155,7 @@ collectd_enable_sensubility: False
 # Corresponds to CollectdSensubilityExecSudoRule in THT
 # Given rule will be created in /etc/sudoers.d for sensubility to enable it
 # calling restricted commands via sensubility executor.
-collectd_sensubility_exec_sudo_rule:
+collectd_sensubility_exec_sudo_rule: nil
 
 # Corresponds to CollectdSensubilityLogLevel in THT
 # Use for override the default logging level (WARNING).
