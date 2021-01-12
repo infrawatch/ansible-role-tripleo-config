@@ -33,7 +33,7 @@ jobs:
         uses: gofrolist/molecule-action@v2
         with:
           molecule_command: test
-          molecule_args: --all
+          molecule_args: -s ${{ matrix.scenario }}
           molecule_working_dir: ${{ github.repository }}
 
   lint:
