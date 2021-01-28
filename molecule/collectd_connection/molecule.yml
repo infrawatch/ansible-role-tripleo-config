@@ -26,9 +26,8 @@ platforms:
 provisioner:
   name: ansible
   log: true
-  #playbooks:
-  #  prepare: ../common/prepare.yml
-  #  cleanup: ../common/cleanup.yml
+  playbooks:
+    cleanup: ../common/cleanup.yml
   inventory:
     host_vars:
       collectd-test:

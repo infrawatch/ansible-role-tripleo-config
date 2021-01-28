@@ -2,19 +2,20 @@
 - name: Converge
   hosts: collectd-test
   tasks:
-    - include_role:
+    - name: "Use tripleo_collectd to configure collectd to sent metrics using the network plugin"
+      include_role:
         name: '{{ playbook_dir }}/../../../tripleo-collectd-ansible-role'
+        tasks_from: configure_collectd
       vars:
         collectd_conf_output_dir: "/etc/collectd.d/"
-        deploy_stage: 'configure_collectd'
-        step: 1
         collectd_connection_type: 'network'
         collectd_server: '192.168.42.2'
 
 - name: Converge collectd-server
   hosts: collectd-server
   tasks:
-    - include_role:
+    - name: "Configure collectd on the server to receive metrics"
+      include_role:
         name: collectd_config
       vars:
         collectd_conf_output_dir: "/etc/collectd.d/"

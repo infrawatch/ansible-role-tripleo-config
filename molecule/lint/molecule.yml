@@ -1,0 +1,21 @@
+---
+dependency:
+  name: galaxy
+  options:
+    role-file: molecule/common/requirements.yml
+platforms:
+  - name: collectd-test
+    image: docker.io/tripleomaster/centos-binary-collectd:current-tripleo-rdo
+provisioner:
+  name: ansible
+  log: true
+lint: |
+  ansible-lint **/*.yml
+
+verifier:
+  name: ansible
+
+scenario:
+  name: lint
+  test_sequence:
+    - lint

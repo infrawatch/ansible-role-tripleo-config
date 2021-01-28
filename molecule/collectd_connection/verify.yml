@@ -3,20 +3,6 @@
 # there are two hosts in the scenario, and this relies on there being one, and
 # using podman
 #- import_playbook: ../common/verify.yml
-- name: "(Re)start collectd service"
-  hosts:
-    - collectd-test
-    - collectd-server
-  tasks:
-    - name: "Kill running collectd process"
-      command:
-        pkill -e -c collectd
-      ignore_errors: true
-
-    - name: "Start collectd"
-      command:
-        /usr/sbin/collectd -C /etc/collectd.conf
-
 - name: Verify collectd-test
   hosts: collectd-test
   tasks:
@@ -45,6 +31,21 @@
     - debug:
         var: output.stdout
 
+- name: "(Re)start collectd service"
+  hosts:
+    - collectd-test
+    - collectd-server
+  tasks:
+    - name: "Kill running collectd process"
+      command:
+        pkill -e -c collectd
+      ignore_errors: true
+      changed_when: false
+
+    - name: "Start collectd"
+      command:
+        /usr/sbin/collectd -C /etc/collectd.conf
+      changed_when: false
 
 - name: Verify collectd-server
   hosts: collectd-server

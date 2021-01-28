@@ -1,5 +1,0 @@
----
-# This remains for testing purposes, and will be here while the deploy stages tasks are here.
-# eventually, the contents of the relevant {{  deploy_stage }}.yml will be in THT.
--  name: Include tasks for deploy stage
-   include_tasks: "{{ deploy_stage }}.yml"
