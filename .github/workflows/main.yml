@@ -14,6 +14,7 @@ jobs:
           - collectd_connection
           - enable_stf
           - default
+          - enable_sensubility
           - lint
 
     env:
