@@ -6,4 +6,4 @@
     setype: "{{ item.setype }}"
     mode: "{{ item.mode }}"
   with_items:
-    - { 'path': /var/log/containers/collectd, 'setype': container_file_t, 'mode': '0750' }
+    - {'path': /var/log/containers/collectd, 'setype': container_file_t, 'mode': '0750'}

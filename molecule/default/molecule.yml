@@ -5,6 +5,7 @@ dependency:
     role-file: molecule/common/requirements.yml
 driver:
   name: docker
+# TODO: Use UBI
 platforms:
   - name: collectd-test
     image: quay.io/tripleomaster/openstack-collectd:current-tripleo

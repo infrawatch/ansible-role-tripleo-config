@@ -129,4 +129,4 @@
     path: "{{ collectd_conf_output_dir }}/../collectd.conf"
     regexp: "^(.*){{ collectd_conf_output_dir }}(.*)$"
     line: '\1/etc/collectd.d/\2'
-    backrefs: yes
+    backrefs: true

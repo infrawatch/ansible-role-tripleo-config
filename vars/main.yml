@@ -10,22 +10,22 @@ collectd_interval: "{{ collectd_default_polling_interval }}"
 #     collectd::purge_config: true
 #     collectd::minimum_version: "5.7"
 
-collectd_plugin_cpu_reportbycpu: True
-collectd_plugin_cpu_reportbystate: True
-collectd_plugin_cpu_reportnumcpu: False
-collectd_plugin_cpu_valuespercentage: True
+collectd_plugin_cpu_reportbycpu: true
+collectd_plugin_cpu_reportbystate: true
+collectd_plugin_cpu_reportnumcpu: false
+collectd_plugin_cpu_valuespercentage: true
 
-collectd_plugin_df_ignoreselected: True
-collectd_plugin_df_reportbydevice: True
+collectd_plugin_df_ignoreselected: true
+collectd_plugin_df_reportbydevice: true
 # TODO: Check on fstypes parsing and rendering
 #     collectd::plugin::df::fstypes: ['xfs']
 
-collectd_plugin_load_reportrelative: True
+collectd_plugin_load_reportrelative: true
 
 collectd_plugin_logfile_file: /var/log/collectd/collectd.log
 collectd_plugin_unixsock_socketgroup: root
 collectd_plugin_unixsock_socketfile: /run/collectd-socket
-collectd_plugin_unixsock_delete_socket: True
+collectd_plugin_unixsock_delete_socket: true
 
 collectd_plugin_virt_connection: "qemu:///system"
 collectd_plugin_virt_extrastats: >-
