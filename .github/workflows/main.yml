@@ -19,6 +19,7 @@ jobs:
     env:
       PY_COLORS: '1'
       ANSIBLE_FORCE_COLOR: '1'
+      CONTAINER_BIN: docker
 
     steps:
       - name: Checkout
