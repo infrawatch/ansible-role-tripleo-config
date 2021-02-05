@@ -148,6 +148,11 @@ collectd_amqp_retry_delay: 1
 # default for all collectd plugins is used.
 collectd_amqp_interval: -666
 
+# Corresponds to CollectdAmqpSendQueueLimit in THT
+# Number of data sets to be kept in memory, older sets will be discarded,
+# if set to -1, this feature is disabled.
+collectd_amqp_send_queue_limit: -1
+
 # Corresponds to CollectdEnableSensubility in THT
 # Set to true if sensubility should be executed by exec plugin.
 collectd_enable_sensubility: false

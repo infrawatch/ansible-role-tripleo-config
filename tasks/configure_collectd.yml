@@ -55,6 +55,11 @@
       set_fact:
         collectd_plugin_amqp1_interval: "{{ collectd_amqp_interval }}"
 
+    - name: "Set amqp send_queue_limit"
+      when: "{{ collectd_amqp_send_queue_limit != -1 }}"
+      set_fact:
+         collectd_plugin_amqp1_send_queue_limit: "{{ collectd_amqp_send_queue_limit }}"
+
     - name: "Use the default values for the AMQP connection"
       when: "{{ amqp_default_connection }}"
       set_fact:
