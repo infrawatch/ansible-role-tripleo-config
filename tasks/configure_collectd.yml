@@ -120,7 +120,8 @@
   # https://github.com/openstack/puppet-tripleo/blob/master/manifests/profile/base/metrics/collectd/sqlalchemy_collectd.pp
   when: tripleo_collectd_enable_sqlalchemy
   set_fact:
-    todo: true
+    collectd_plugin_python_module_import: "{{ collectd_plugin_python_module_import | default([]) + ['sqlalchemy_collectd.server.plugin'] }}"
+    collectd_plugin_python_module: "{{ collectd_plugin_python_module + { 'sqlalchemy': { 'config': { 'listen': ['sqlalchemy_bind_host', sqlalchemy_bind_port], 'loglevel': sqlalchemy_log_messages } } } }}"
 
 # Do I need to break these into separate support tasks?
 - name: "Configure collectd to run collectd-sensubility via collectd-exec"

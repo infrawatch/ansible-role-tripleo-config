@@ -1,0 +1,13 @@
+---
+- import_playbook: ../common/verify.yml
+
+- name: Verify
+  hosts: collectd-test
+  tasks:
+    - name: "Check that the right plugins are enabled"
+      stat:
+        path: "{{ collectd_conf_output_dir }}/{{ item }}.conf"
+      register: conf
+      failed_when: not conf.stat.exists
+      loop:
+        - python
