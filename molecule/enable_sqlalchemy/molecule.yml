@@ -5,12 +5,11 @@ dependency:
     role-file: molecule/common/requirements.yml
 
 driver:
-  name:  ${CONTAINER_BIN:-podman}
+  name: ${CONTAINER_BIN:-podman}
 
 platforms:
   - name: collectd-test
     image: quay.io/tripleomaster/openstack-collectd:current-tripleo
-    pre_build_image: true
 
 provisioner:
   name: ansible
@@ -36,4 +35,3 @@ scenario:
     - verify
     - destroy
     - cleanup
-

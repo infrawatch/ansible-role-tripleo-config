@@ -122,9 +122,14 @@
     - tripleo_collectd_enable_sqlalchemy|bool
   set_fact:
     collectd_plugins: "{{ collectd_plugins | union(['python']) | unique }}"
-    collectd_plugin_python_modules: "{{ collectd_plugin_python_module | default({}) | combine( { 'sqlalchemy': { 'config': { 'listen': [tripleo_collectd_sqlalchemy_bind_host, 25827], 'loglevel': tripleo_collectd_sqlalchemy_log_messages }, 'module_import': 'sqlalchemy_collectd.server.plugin' } }) }}"
+    collectd_plugin_python_modules: "{{ collectd_plugin_python_module | default({}) | combine( {
+           'sqlalchemy': {
+             'config': {
+               'listen': [tripleo_collectd_sqlalchemy_bind_host, 25827],
+               'loglevel': tripleo_collectd_sqlalchemy_log_messages },
+             'module_import': 'sqlalchemy_collectd.server.plugin'
+             }}) }}"
 
-# Do I need to break these into separate support tasks?
 - name: "Configure collectd to run collectd-sensubility via collectd-exec"
   set_fact:
     todo: true
