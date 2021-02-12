@@ -2,11 +2,16 @@
 - name: Converge
   hosts: collectd-test
   tasks:
-    - include_role:
+    - name: "Set up expected THT vars"
+      set_fact:
+        tripleo_role_name: "SomeRole"
+        service_net_map:
+          some_role_metrics_qdr_network: "ctlplane"
+        ctlplane_ip: "10.0.0.42"
+
+    - name: "Use tripleo_collectd to configure collectd with defaults"
+      include_role:
         name: '{{ playbook_dir }}/../../../tripleo-collectd-ansible-role'
+        tasks_from: configure_collectd
       vars:
         collectd_conf_output_dir: "/etc/collectd.d/"
-        # NOTE: This should be used for testing only, it is not a
-        # deploy_stage supported by OoO
-        deploy_stage: 'configure_collectd'
-        step: 1

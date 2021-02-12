@@ -73,7 +73,7 @@ collectd_extra_plugins: []
 
 # Corresponds to CollectdServer in THT
 # Address of remote collectd server to which we will send metrics.
-collectd_server: 
+collectd_server:
 
 # Corresponds to CollectdServerPort in THT
 # Port on remote collectd server to which we will send metrics.
@@ -96,7 +96,7 @@ collectd_security_level: None
 
 # Corresponds to EnableSQLAlchemyCollectd in THT
 # Set to true to enable the SQLAlchemy-collectd server plugin
-enable_sqlalchemy_collectd: False
+enable_sqlalchemy_collectd: false
 
 # Corresponds to CollectdSQLAlchemyLogMessages in THT
 # set to "debug" to enable message logging.
@@ -148,14 +148,19 @@ collectd_amqp_retry_delay: 1
 # default for all collectd plugins is used.
 collectd_amqp_interval: -666
 
+# Corresponds to CollectdAmqpSendQueueLimit in THT
+# Number of data sets to be kept in memory, older sets will be discarded,
+# if set to -1, this feature is disabled.
+collectd_amqp_send_queue_limit: -1
+
 # Corresponds to CollectdEnableSensubility in THT
 # Set to true if sensubility should be executed by exec plugin.
-collectd_enable_sensubility: False
+collectd_enable_sensubility: false
 
 # Corresponds to CollectdSensubilityExecSudoRule in THT
 # Given rule will be created in /etc/sudoers.d for sensubility to enable it
 # calling restricted commands via sensubility executor.
-collectd_sensubility_exec_sudo_rule:
+collectd_sensubility_exec_sudo_rule: nil
 
 # Corresponds to CollectdSensubilityLogLevel in THT
 # Use for override the default logging level (WARNING).
@@ -188,7 +193,7 @@ collectd_sensubility_checks: {}
 # Corresponds to CollectdEnableContainerHealthCheck in THT
 # Set to false if container health check should not be defined and attached to
 # CollectdEnableContainerHealthCheck.
-collectd_enable_container_health_check: True
+collectd_enable_container_health_check: true
 
 # Corresponds to CollectdContainerHealthCheckCommand in THT
 collectd_container_health_check_command: >
@@ -224,8 +229,8 @@ collectd_container_health_check_refresh: 90
 
 # Corresponds to EnableSTF in THT
 # Set to true to enable configuration for STF client.
-enable_stf: False
+enable_stf: false
 
 # Corresponds to CollectdEnableMcelog in THT
 # Set to true to enable mcelog
-collectd_enable_mcelog: False
+collectd_enable_mcelog: false

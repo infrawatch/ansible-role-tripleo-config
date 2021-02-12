@@ -4,10 +4,11 @@ dependency:
   options:
     role-file: molecule/common/requirements.yml
 driver:
-  name: docker
+  name:  ${CONTAINER_BIN:-podman}
+
 platforms:
   - name: collectd-test
-    image: docker.io/tripleomaster/centos-binary-collectd:current-tripleo-rdo
+    image: quay.io/tripleomaster/openstack-collectd:current-tripleo
 provisioner:
   name: ansible
   log: true
@@ -28,7 +29,6 @@ scenario:
     - create
     - prepare
     - converge
-    # - side_effect
     - verify
     - destroy
     - cleanup

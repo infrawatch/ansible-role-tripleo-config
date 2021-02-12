@@ -1,6 +1,8 @@
 ---
-- name: "Prepare the host for testing"
-  hosts: collectd-test
+- name: "Prepare the hosts for testing"
+  hosts:
+    - collectd-test
+    - collectd-server
   tasks:
     - name: "Create a directory for the log file"
       file:

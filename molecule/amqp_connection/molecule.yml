@@ -4,10 +4,10 @@ dependency:
   options:
     role-file: molecule/common/requirements.yml
 driver:
-  name: docker
+  name:  ${CONTAINER_BIN:-podman}
 platforms:
   - name: collectd-test
-    image: docker.io/tripleomaster/centos-binary-collectd:current-tripleo-rdo
+    image: quay.io/tripleomaster/openstack-collectd:current-tripleo
 provisioner:
   name: ansible
   log: true
@@ -24,25 +24,10 @@ verifier:
 scenario:
   test_sequence:
     - destroy
-    - dependency  # host dependencies?
+    - dependency
     - create
-    - prepare  # Wait, what does prepare do?
+    - prepare
     - converge
     - verify
     - destroy
-    - cleanup  #  Remove the created config dir
-
-# see: https://molecule.readthedocs.io/en/stable/configuration.html#scenario
-# I can create custom test stages
-# - prepare  # create the config directories on the host
-# - create  # Launch the container with volumes mounted
-# - converge
-#   - create_config
-#   - run_kolla_start
-# - verify
-#   - specific_tests (in container?)
-#   - do_functional_tests (localhost)
-# - destroy
-# - cleanup  # Remove the directory with the configs in it
-
-# Try to keep a common converge, and pass vars via host_vars? Can I do this on localhost?
+    - cleanup
