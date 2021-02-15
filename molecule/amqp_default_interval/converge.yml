@@ -15,7 +15,7 @@
         tasks_from: configure_collectd
       vars:
         collectd_conf_output_dir: "/etc/collectd.d/"
-        collectd_amqp_host: collectd-test
+        tripleo_collectd_amqp_host: collectd-test
         # This is not the right things to put here... need to check tripleo_collectd
-        collectd_connection_type: 'amqp1'
-        collectd_amqp_interval: -666
+        tripleo_collectd_connection_type: 'amqp1'
+        tripleo_collectd_amqp_interval: -666

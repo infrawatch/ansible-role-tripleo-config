@@ -8,8 +8,8 @@
         tasks_from: configure_collectd
       vars:
         collectd_conf_output_dir: "/etc/collectd.d/"
-        collectd_connection_type: 'network'
-        collectd_server: '192.168.42.2'
+        tripleo_collectd_connection_type: 'network'
+        tripleo_collectd_server: '192.168.42.2'
 
 - name: Converge collectd-server
   hosts: collectd-server

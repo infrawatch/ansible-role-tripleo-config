@@ -1,19 +1,19 @@
 ---
 - name: Create initial plugins list
   set_fact:
-    collectd_plugins: "{{ (collectd_default_plugins + collectd_extra_plugins) | unique }}"
+    collectd_plugins: "{{ (tripleo_collectd_default_plugins + tripleo_collectd_extra_plugins) | unique }}"
 
 - name: Set interval
   set_fact:
-    collectd_interval: "{{ collectd_default_polling_interval }}"
+    collectd_interval: "{{ tripleo_collectd_default_polling_interval }}"
 
 - name: Set up conditionals
   set_fact:
-    amqp_connection: "{{ (collectd_connection_type == 'amqp1')|default(false) }}"
-    amqp_default_connection: "{{ (collectd_amqp_host == 'nil')|default(false) }}"
-    amqp_default_interval: "{{ (collectd_amqp_interval|int == -666)|default(false) }}"
-    collectd_connection: "{{ (collectd_connection_type == 'network')|default(false) }}"
-    sensubility_needs_sudo: "{{ (collectd_sensubility_exec_sudo_rule != 'nil' )| default(false) }}"
+    amqp_connection: "{{ (tripleo_collectd_connection_type == 'amqp1')|default(false) }}"
+    amqp_default_connection: "{{ (tripleo_collectd_amqp_host == 'nil')|default(false) }}"
+    amqp_default_interval: "{{ (tripleo_collectd_amqp_interval|int == -666)|default(false) }}"
+    collectd_connection: "{{ (tripleo_collectd_connection_type == 'network')|default(false) }}"
+    sensubility_needs_sudo: "{{ (tripleo_collectd_sensubility_exec_sudo_rule != 'nil' )| default(false) }}"
 
 - debug:
     var: "{{ item }}"
@@ -23,12 +23,15 @@
     - amqp_default_interval
     - collectd_connection
     - sensubility_needs_sudo
-    - collectd_extra_plugins
+    - tripleo_collectd_extra_plugins
+
+- debug:
+     var: collectd_connection
 
 - name: "Update plugin list"
   set_fact:
     collectd_plugins: "{{ (collectd_plugins + 'cpu df load connectivity intel_rdt ipmi procevent'.split() ) | unique }}"
-  when: enable_stf|bool
+  when: tripleo_collectd_enable_stf|bool
 
 - debug:
     var: collectd_plugins
@@ -45,20 +48,20 @@
         collectd_plugins: "{{ ( collectd_plugins + ['amqp1']) | unique }}"
     - name: "Configure transport, address, instances and retry_delay for amqp1"
       set_fact:
-        collectd_plugin_amqp1_transport: "{{ collectd_amqp_transport_name }}"
-        collectd_plugin_amqp1_address: "{{ collectd_amqp_address }}"
-        collectd_plugin_amqp1_instances: "{{ collectd_amqp_instances }}"
-        collectd_plugin_amqp1_retry_delay: "{{ collectd_amqp_retry_delay }}"
+        collectd_plugin_amqp1_transport: "{{ tripleo_collectd_amqp_transport_name }}"
+        collectd_plugin_amqp1_address: "{{ tripleo_collectd_amqp_address }}"
+        collectd_plugin_amqp1_instances: "{{ tripleo_collectd_amqp_instances }}"
+        collectd_plugin_amqp1_retry_delay: "{{ tripleo_collectd_amqp_retry_delay }}"
 
     - name: "Set the interval for the amqp1 plugin"
       when: "{{ not amqp_default_interval }}"
       set_fact:
-        collectd_plugin_amqp1_interval: "{{ collectd_amqp_interval }}"
+        collectd_plugin_amqp1_interval: "{{ tripleo_collectd_amqp_interval }}"
 
     - name: "Set amqp send_queue_limit"
-      when: "{{ collectd_amqp_send_queue_limit != -1 }}"
+      when: "{{ tripleo_collectd_amqp_send_queue_limit != -1 }}"
       set_fact:
-         collectd_plugin_amqp1_send_queue_limit: "{{ collectd_amqp_send_queue_limit }}"
+         collectd_plugin_amqp1_send_queue_limit: "{{ tripleo_collectd_amqp_send_queue_limit }}"
 
     - name: "Use the default values for the AMQP connection"
       when: "{{ amqp_default_connection }}"
@@ -71,10 +74,10 @@
     - name: "Set up user-defined amqp connection"
       when: "{{ not amqp_default_connection }}"
       set_fact:
-        collectd_plugin_amqp1_host: "{{ collectd_amqp_host }}"
-        collectd_plugin_amqp1_port: "{{ collectd_amqp_port  }}"
-        collectd_plugin_amqp1_user: "{{ collectd_amqp_user }}"
-        collectd_plugin_amqp1_password: "{{ collectd_amqp_password }}"
+        collectd_plugin_amqp1_host: "{{ tripleo_collectd_amqp_host }}"
+        collectd_plugin_amqp1_port: "{{ tripleo_collectd_amqp_port  }}"
+        collectd_plugin_amqp1_user: "{{ tripleo_collectd_amqp_user }}"
+        collectd_plugin_amqp1_password: "{{ tripleo_collectd_amqp_password }}"
 
 - name: Set up collectd connection to external collectd instance
   when: collectd_connection
@@ -87,16 +90,16 @@
         msg: "Collectd plugin list has been updated, the following plugins will be enabled: {{ collectd_plugins }}"
 
     - name: "Create the collectd network config."
-      when: collectd_server | length != 0
+      when: tripleo_collectd_server | length != 0
       block:
         - name: "Populate the initial config for network server."
           set_fact:
             collectd_plugin_network_server:
-              name: "{{ collectd_server }}"
-              port: "{{ collectd_server_port | default(omit) }}"
-              username: "{{ collectd_username | default(omit) }}"
-              password: "{{ collectd_password | default(omit) }}"
-              securitylevel: "{{ collectd_security_level }}"
+              name: "{{ tripleo_collectd_server }}"
+              port: "{{ tripleo_collectd_server_port | default(omit) }}"
+              username: "{{ tripleo_collectd_username | default(omit) }}"
+              password: "{{ tripleo_collectd_password | default(omit) }}"
+              securitylevel: "{{ tripleo_collectd_security_level }}"
 
         - name: "Show the (initial) network server config (may contain empty values which need to be removed)."
           debug:
@@ -115,7 +118,7 @@
   # TODO: check does the puppet tripleo::...::collectd::enable_sqlalchemy role
   # do anything besides set up the config
   # https://github.com/openstack/puppet-tripleo/blob/master/manifests/profile/base/metrics/collectd/sqlalchemy_collectd.pp
-  when: enable_sqlalchemy_collectd
+  when: tripleo_collectd_enable_sqlalchemy
   set_fact:
     todo: true
 
@@ -123,7 +126,7 @@
 - name: "Configure collectd to run collectd-sensubility via collectd-exec"
   set_fact:
     todo: true
-  when: collectd_enable_sensubility
+  when: tripleo_collectd_enable_sensubility
 
 - name: "Generate the collectd config files"
   include_role:

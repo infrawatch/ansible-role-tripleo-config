@@ -10,7 +10,7 @@
   block:
     - name: Log healthchecks in dedicated file
       when:
-        - collectd_enable_sensubility|bool
+        - tripleo_collectd_enable_sensubility|bool
       register: logconfig_add
       copy:
         dest: /etc/rsyslog.d/openstack-healthcheck.conf
@@ -19,7 +19,7 @@
           & stop
     - name: Remove healthcheck log
       when:
-        - not collectd_enable_sensubility|bool
+        - not tripleo_collectd_enable_sensubility|bool
       register: logconfig_rm
       file:
         path: /etc/rsyslog.d/openstack-healthcheck.conf
