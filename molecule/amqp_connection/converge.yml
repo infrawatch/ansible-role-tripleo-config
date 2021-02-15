@@ -16,4 +16,4 @@
       vars:
         collectd_conf_output_dir: "/etc/collectd.d/"
         # This is not the right things to put here... need to check tripleo_collectd
-        collectd_connection_type: 'amqp1'
+        tripleo_collectd_connection_type: 'amqp1'
