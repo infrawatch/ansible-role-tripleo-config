@@ -11,3 +11,20 @@
       failed_when: not conf.stat.exists
       loop:
         - python
+
+    - name: "Get contents of python.conf"
+      slurp:
+        path: "{{ collectd_conf_output_dir }}/python.conf"
+      register: python_conf
+
+    - debug:
+        var: python_conf.content | b64decode
+
+    - name: "Check expected contents of python.conf"
+      assert:
+        that:
+          - '"Import \"sqlalchemy_collectd.server.plugin\"" in python_conf.content | b64decode'
+          - '"<Module \"sqlalchemy_collectd.server.plugin\">" in python_conf.content | b64decode'
+          - '"listen \"localhost\" 25827" in python_conf.content | b64decode'
+          - '"loglevel \"info\"" in python_conf.content | b64decode'
+

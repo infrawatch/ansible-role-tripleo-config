@@ -15,4 +15,4 @@
         tasks_from: configure_collectd
       vars:
         collectd_conf_output_dir: "/etc/collectd.d/"
-        enable_sqlalchemy: true
+        tripleo_collectd_enable_sqlalchemy: true
