@@ -39,7 +39,8 @@
         path: /etc/rsyslog.d/openstack-healthcheck.conf
         state: absent
     - name: Reload rsyslogd if needed
-      when: logconfig_add is changed or logconfig_rm is changed
+      when:
+        - logconfig_add is changed or logconfig_rm is changed
       service:
         name: rsyslog
         state: restarted

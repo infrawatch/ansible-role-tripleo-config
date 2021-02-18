@@ -14,24 +14,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-# Corresponds to EndpointMap in THT
-# Mapping of service endpoint -> protocol. Typically set via parameter_defaults
-# in the resource registry.
-endpoint_map: {}
-
-# Corresponds to ServiceData in THT
-# Dictionary packing service data
-service_data: {}
-
-# Corresponds to ServiceNetMap in THT
-# Mapping of service_name -> network name. Typically set via parameter_defaults
-# in the resource registry.  This mapping overrides those in
-# ServiceNetMapDefaults.
-service_net_map: {}
-
-# Corresponds to DefaultPasswords in THT
-default_passwords: {}
-
 # Corresponds to RoleName in THT
 # Role name on which the service is applied
 tripleo_role_name:
@@ -39,10 +21,6 @@ tripleo_role_name:
 # Corresponds to RoleParameters in THT
 # Parameters specific to the role
 role_parameters: {}
-
-# Corresponds to KeystoneRegion in THT
-# Keystone region for endpoint
-keystone_region: regionOne
 
 # Corresponds to MetricsQdrPort in THT
 # Service name or port number on which the qdrouterd will accept connections.
