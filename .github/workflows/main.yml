@@ -12,8 +12,9 @@ jobs:
           - amqp_connection
           - amqp_default_interval
           - collectd_connection
-          - enable_stf
           - default
+          - enable_sqlalchemy
+          - enable_stf
           - lint
 
     env:

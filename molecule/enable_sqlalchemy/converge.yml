@@ -9,11 +9,10 @@
           some_role_metrics_qdr_network: "ctlplane"
         ctlplane_ip: "10.0.0.42"
 
-    - name: "Use the tripleo_collectd role to configure collectd to export metrics to amqp"
+    - name: "Include tripleo-collectd-ansible-role"
       include_role:
         name: '{{ playbook_dir }}/../../../tripleo-collectd-ansible-role'
         tasks_from: configure_collectd
       vars:
         collectd_conf_output_dir: "/etc/collectd.d/"
-        # This is not the right things to put here... need to check tripleo_collectd
-        tripleo_collectd_connection_type: 'amqp1'
+        tripleo_collectd_enable_sqlalchemy: true
