@@ -116,9 +116,17 @@
   # TODO: check does the puppet tripleo::...::collectd::enable_sqlalchemy role
   # do anything besides set up the config
   # https://github.com/openstack/puppet-tripleo/blob/master/manifests/profile/base/metrics/collectd/sqlalchemy_collectd.pp
-  when: tripleo_collectd_enable_sqlalchemy
+  when:
+    - tripleo_collectd_enable_sqlalchemy|bool
   set_fact:
-    todo: true
+    collectd_plugins: "{{ collectd_plugins | union(['python']) | unique }}"
+    collectd_plugin_python_modules: "{{ collectd_plugin_python_module | default({}) | combine( {
+           'sqlalchemy': {
+             'config': {
+               'listen': [tripleo_collectd_sqlalchemy_bind_host, 25827],
+               'loglevel': tripleo_collectd_sqlalchemy_log_messages },
+             'module_import': 'sqlalchemy_collectd.server.plugin'
+             }}) }}"
 
 - name: "Configure collectd to run collectd-sensubility via collectd-exec"
   when:
@@ -159,7 +167,6 @@
             owner: collectd
             mode: 0440
             validate: 'visudo -c -f %s'
-
 
     - name: "Set up the healthcheck check"
       when:

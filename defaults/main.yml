@@ -234,4 +234,3 @@ tripleo_collectd_enable_stf: false
 # Corresponds to CollectdEnableMcelog in THT
 # Set to true to enable mcelog
 tripleo_collectd_enable_mcelog: false
-
