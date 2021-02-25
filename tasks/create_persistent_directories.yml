@@ -23,3 +23,4 @@
     mode: "{{ item.mode }}"
   with_items:
     - {'path': /var/log/containers/collectd, 'setype': container_file_t, 'mode': '0750'}
+    - {'path': "{{ collectd_conf_output_dir }}", 'setype': container_file_t, 'mode': '0750'}

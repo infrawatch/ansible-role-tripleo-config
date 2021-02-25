@@ -160,7 +160,7 @@ tripleo_collectd_enable_sensubility: false
 # Corresponds to CollectdSensubilityExecSudoRule in THT
 # Given rule will be created in /etc/sudoers.d for sensubility to enable it
 # calling restricted commands via sensubility executor.
-tripleo_collectd_sensubility_exec_sudo_rule: nil
+tripleo_collectd_sensubility_exec_sudo_rule: ''
 
 # Corresponds to CollectdSensubilityLogLevel in THT
 # Use for override the default logging level (WARNING).
@@ -169,6 +169,8 @@ tripleo_collectd_sensubility_log_level: WARNING
 # Corresponds to CollectdSensubilityConnection in THT
 # URL to Sensu sever side
 tripleo_collectd_sensubility_connection: amqp://sensu:sensu@localhost:5672//sensu
+
+tripleo_collectd_sensubility_subscriptions: []
 
 # Corresponds to CollectdSensubilityKeepaliveInterval in THT
 # Interval in seconds for sending keepalive messages to Sensu server side.

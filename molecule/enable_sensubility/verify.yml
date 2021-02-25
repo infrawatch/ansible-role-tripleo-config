@@ -21,7 +21,8 @@
       stat:
         path: '/etc/collectd-sensubility.conf'
       register: output
-      failed_when: not output.stat.exists
+      failed_when:
+        - not output.stat.exists
 
     - name: "Get contents of the generated collectd-sensubility file"
       slurp:
@@ -36,7 +37,6 @@
       assert:
         that:
           - '"connection=amqp://sensu:sensu@localhost:5672//sensu" in sensubility_conf.content | b64decode'
-          - '"subscriptions=\n" in sensubility_conf.content | b64decode'
           - '"client_name=standalone.ctlplane.localdomain" in sensubility_conf.content | b64decode'
           - '"client_address=10.0.0.42" in sensubility_conf.content | b64decode'
           - '"keepalive_interval=20" in sensubility_conf.content | b64decode'
