@@ -20,7 +20,9 @@ collectd_plugin_df_reportbydevice: true
 # TODO: Check on fstypes parsing and rendering
 #     collectd::plugin::df::fstypes: ['xfs']
 
-collectd_plugin_load_reportrelative: true
+collectd_plugin_exec_globals: False
+
+collectd_plugin_load_reportrelative: True
 
 collectd_plugin_logfile_file: /var/log/collectd/collectd.log
 collectd_plugin_unixsock_socketgroup: root

@@ -13,10 +13,8 @@
         - tripleo_collectd_enable_sensubility|bool
       register: logconfig_add
       copy:
-        dest: /etc/rsyslog.d/openstack-healthcheck.conf
-        content: |
-          if ($programname startswith 'podman' and ($msg contains 'container exec' or $msg contains 'healthy')) or ($programname startswith 'systemd' and $msg contains 'podman healthcheck run') then -/var/log/containers/collectd/healthchecks.stdout
-          & stop
+        dest: /etc/rsyslog.d/
+        src: files/openstack-healthcheck.conf
     - name: Remove healthcheck log
       when:
         - not tripleo_collectd_enable_sensubility|bool

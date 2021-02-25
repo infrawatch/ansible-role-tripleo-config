@@ -13,7 +13,6 @@
     amqp_default_connection: "{{ (tripleo_collectd_amqp_host == 'nil')|default(false) }}"
     amqp_default_interval: "{{ (tripleo_collectd_amqp_interval|int == -666)|default(false) }}"
     collectd_connection: "{{ (tripleo_collectd_connection_type == 'network')|default(false) }}"
-    sensubility_needs_sudo: "{{ (tripleo_collectd_sensubility_exec_sudo_rule != 'nil' )| default(false) }}"
 
 - debug:
     var: "{{ item }}"
@@ -22,7 +21,6 @@
     - amqp_default_connection
     - amqp_default_interval
     - collectd_connection
-    - sensubility_needs_sudo
     - tripleo_collectd_extra_plugins
 
 - debug:
@@ -131,9 +129,82 @@
              }}) }}"
 
 - name: "Configure collectd to run collectd-sensubility via collectd-exec"
-  set_fact:
-    todo: true
-  when: tripleo_collectd_enable_sensubility
+  when:
+    - tripleo_collectd_enable_sensubility|bool
+  block:
+    - name: Set-up sensubility config for exec
+      set_fact:
+        sensubility_exec:
+          - user: collectd
+            group: collectd
+            exec: "collectd-sensubility"
+
+    - name: Configure the exec plugin
+      set_fact:
+        collectd_plugins: "{{ collectd_plugins | union(['exec']) | unique }}"
+        collectd_plugin_exec_exec: "{{ ( collectd_plugin_exec_exec | default([]) ) | union( sensubility_exec ) }}"
+
+    - name: "Update sudoers file"
+      when:
+        - (tripleo_collectd_sensubility_exec_sudo_rule != 'nil' )|default(false)
+      block:
+        - name: "Set sudoers path"
+          set_fact:
+            sensubility_sudoers_file: "{{ collectd_conf_output_dir }}/../sudoers.d/sensubility_collectd"
+
+        - name: "Create sudoers.d if it does not exist"
+          file:
+            path: "{{ sensubility_sudoers_file | dirname }}"
+            mode: 0750
+            state: directory
+
+        - name: "Populate the file in sudoers.d/"
+          lineinfile:
+            dest: "{{ sensubility_sudoers_file }}"
+            state: present
+            line: "{{ tripleo_collectd_sensubility_exec_sudo_rule }}"
+            create: yes
+            owner: collectd
+            mode: 0440
+            validate: 'visudo -c -f %s'
+
+    - name: "Set up the healthcheck check"
+      when:
+        - tripleo_collectd_enable_container_health_check|bool
+      set_fact:
+        healthcheck_check:
+          check-container-health:
+            standalone: true
+            command: "{{ tripleo_collectd_container_health_check_command }}"
+            interval: "{{ tripleo_collectd_container_health_check_interval }}"
+            handlers: "{{ tripleo_collectd_container_health_check_handlers }}"
+            occurences: "{{ tripleo_collectd_container_health_check_occurrences }}"
+            refresh: "{{ tripleo_collectd_container_health_check_refresh }}"
+
+    - name: "Set the values for collectd-sensubility.conf"
+      # https://github.com/openstack/puppet-tripleo/blob/master/spec/fixtures/hieradata/step3.yaml
+      set_fact:
+        collectd_sensubility_log_file: "/var/log/collectd/sensubility.log"
+        collectd_sensubility_log_level: "{{ tripleo_collectd_sensubility_log_level }}"
+        collectd_sensubility_transport: "{{ tripleo_collectd_sensubility_transport }}"
+        collectd_sensubility_connection: "{{ tripleo_collectd_sensubility_connection }}"
+        #collectd_sensubility_subscriptions:
+        collectd_sensubility_keepalive_interval: "{{ tripleo_collectd_sensubility_keepalive_interval }}"
+        collectd_sensubility_tmp_dir: "{{ tripleo_collectd_sensubility_tmp_dir }}"
+        collectd_sensubility_shell_path: "{{ tripleo_collectd_sensubility_shell_path }}"
+        collectd_sensubility_worker_count: "{{ tripleo_collectd_sensubility_worker_count }}"
+        collectd_sensubility_amqp_port: "{{ tripleo_collectd_amqp_port }}"
+        collectd_sensubility_results_channel: "{{ tripleo_collectd_sensubility_results_channel }}"
+        collectd_sensubility_results_format: 'smartgateway'
+        collectd_sensubility_client_name: "{{ lookup('vars', 'fqdn_' + service_net_map[ (tripleo_role_name + 'MetricsQdrNetwork' )| snake_case] ) }}"
+        collectd_sensubility_client_address: "{{ lookup('vars', service_net_map[( tripleo_role_name + 'MetricsQdrNetwork') | snake_case ] + '_ip' ) }}"
+        collectd_sensubility_checks: "{{ tripleo_collectd_sensubility_checks | combine(healthcheck_check|default({})) }}"
+    # This may need to be {{ collectd_conf_output_dir }}/etc/collectd-sensubility.conf
+    - name: Render collectd-sensubility template
+      template:
+        src: collectd-sensubility.conf.j2
+        dest: "{{ collectd_conf_output_dir }}/../collectd-sensubility.conf"
+        mode: 0644
 
 - name: "Generate the collectd config files"
   include_role:

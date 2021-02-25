@@ -13,6 +13,7 @@ jobs:
           - amqp_default_interval
           - collectd_connection
           - default
+          - enable_sensubility
           - enable_sqlalchemy
           - enable_stf
           - lint
