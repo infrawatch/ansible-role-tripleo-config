@@ -1,68 +1,58 @@
 ---
-- name: Create initial plugins list
-  set_fact:
-    collectd_plugins: "{{ (tripleo_collectd_default_plugins + tripleo_collectd_extra_plugins) | unique }}"
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
 
-- name: Set interval
+
+- name: "Create initial plugins list and other vars for collectd_config"
   set_fact:
+    collectd_plugins: "{{ tripleo_collectd_default_plugins | union(tripleo_collectd_extra_plugins) | union(['logfile']) | unique }}"
     collectd_interval: "{{ tripleo_collectd_default_polling_interval }}"
 
-- name: Set up conditionals
+- name: "Enable read plugins for STF"
+  when:
+    - tripleo_collectd_enable_stf|bool
   set_fact:
-    amqp_connection: "{{ (tripleo_collectd_connection_type == 'amqp1')|default(false) }}"
-    amqp_default_connection: "{{ (tripleo_collectd_amqp_host == 'nil')|default(false) }}"
-    amqp_default_interval: "{{ (tripleo_collectd_amqp_interval|int == -666)|default(false) }}"
-    collectd_connection: "{{ (tripleo_collectd_connection_type == 'network')|default(false) }}"
-
-- debug:
-    var: "{{ item }}"
-  with_items:
-    - amqp_connection
-    - amqp_default_connection
-    - amqp_default_interval
-    - collectd_connection
-    - tripleo_collectd_extra_plugins
-
-- debug:
-     var: collectd_connection
-
-- name: "Update plugin list"
-  set_fact:
-    collectd_plugins: "{{ (collectd_plugins + 'cpu df load connectivity intel_rdt ipmi procevent'.split() ) | unique }}"
-  when: tripleo_collectd_enable_stf|bool
-
-- debug:
-    var: collectd_plugins
-
-- name: "Update plugins list so logfile will be enabled"
-  set_fact:
-    collectd_plugins: "{{ ( collectd_plugins + ['logfile'] ) }}"
+    collectd_plugins: "{{ collectd_plugins | union(['cpu', 'df', 'load', 'connectivity', 'intel_rdt', 'ipmi', 'procevent']) | unique }}"
 
 - name: Set up amqp connection to collectd
-  when: amqp_connection
+  when:
+    - tripleo_collectd_connection_type == 'amqp1'
   block:
-    - name: "Add amqp1 to the list of plugins to enable"
+    - name: "Enable amqp1 plugin and configure transport, address, instances and retry_delay"
       set_fact:
-        collectd_plugins: "{{ ( collectd_plugins + ['amqp1']) | unique }}"
-    - name: "Configure transport, address, instances and retry_delay for amqp1"
-      set_fact:
+        collectd_plugins: "{{ collectd_plugins | union(['amqp1']) | unique }}"
         collectd_plugin_amqp1_transport: "{{ tripleo_collectd_amqp_transport_name }}"
         collectd_plugin_amqp1_address: "{{ tripleo_collectd_amqp_address }}"
         collectd_plugin_amqp1_instances: "{{ tripleo_collectd_amqp_instances }}"
         collectd_plugin_amqp1_retry_delay: "{{ tripleo_collectd_amqp_retry_delay }}"
 
     - name: "Set the interval for the amqp1 plugin"
-      when: "{{ not amqp_default_interval }}"
+      when:
+        - tripleo_collectd_amqp_interval|int != -666
       set_fact:
         collectd_plugin_amqp1_interval: "{{ tripleo_collectd_amqp_interval }}"
 
     - name: "Set amqp send_queue_limit"
-      when: "{{ tripleo_collectd_amqp_send_queue_limit != -1 }}"
+      when:
+        - tripleo_collectd_amqp_send_queue_limit != -1
       set_fact:
          collectd_plugin_amqp1_send_queue_limit: "{{ tripleo_collectd_amqp_send_queue_limit }}"
 
     - name: "Use the default values for the AMQP connection"
-      when: "{{ amqp_default_connection }}"
+      when:
+        - tripleo_collectd_amqp_host == 'nil'
       set_fact:
         collectd_plugin_amqp1_host: "{{ lookup('vars', service_net_map[(tripleo_role_name + 'MetricsQdrNetwork') | snake_case] + '_ip' ) }}"
         collectd_plugin_amqp1_port: "{{ metrics_qdr_port }}"
@@ -70,7 +60,8 @@
         collectd_plugin_amqp1_password: "{{ metrics_qdr_password }}"
 
     - name: "Set up user-defined amqp connection"
-      when: "{{ not amqp_default_connection }}"
+      when:
+        - tripleo_collectd_amqp_host != 'nil'
       set_fact:
         collectd_plugin_amqp1_host: "{{ tripleo_collectd_amqp_host }}"
         collectd_plugin_amqp1_port: "{{ tripleo_collectd_amqp_port  }}"
@@ -78,44 +69,33 @@
         collectd_plugin_amqp1_password: "{{ tripleo_collectd_amqp_password }}"
 
 - name: Set up collectd connection to external collectd instance
-  when: collectd_connection
+  when:
+    - tripleo_collectd_connection_type == 'network'
   block:
     - name: "Add network to the list of plugins to enable"
       set_fact:
-        collectd_plugins: "{{ collectd_plugins + ['network'] | unique }}"
-
-    - debug:
-        msg: "Collectd plugin list has been updated, the following plugins will be enabled: {{ collectd_plugins }}"
+        collectd_plugins: "{{ collectd_plugins | union(['network']) | unique }}"
 
     - name: "Create the collectd network config."
-      when: tripleo_collectd_server | length != 0
+      when:
+        - tripleo_collectd_server | length > 0
       block:
         - name: "Populate the initial config for network server."
           set_fact:
-            collectd_plugin_network_server:
-              name: "{{ tripleo_collectd_server }}"
-              port: "{{ tripleo_collectd_server_port | default(omit) }}"
-              username: "{{ tripleo_collectd_username | default(omit) }}"
-              password: "{{ tripleo_collectd_password | default(omit) }}"
-              securitylevel: "{{ tripleo_collectd_security_level }}"
-
-        - name: "Show the (initial) network server config (may contain empty values which need to be removed)."
-          debug:
-            var: collectd_plugin_network_server
+            collectd_plugin_network_server: {
+              'name': "{{ tripleo_collectd_server | default(omit) }}",
+              'port': "{{ tripleo_collectd_server_port | default(omit) }}",
+              'username': "{{ tripleo_collectd_username | default(omit) }}",
+              'password': "{{ tripleo_collectd_password | default(omit) }}",
+              'securitylevel': "{{ tripleo_collectd_security_level| default(omit) }}",
+              }
 
         - name: "Filter out the empty string values from the network server config"
           set_fact:
             collectd_plugin_network_server:
               - '{{ collectd_plugin_network_server | dict2items | rejectattr("value", "equalto", "") | list | items2dict }}'
 
-        - name: "Show the updated network server config, which has empty values removed."
-          debug:
-            var: collectd_plugin_network_server
-
 - name: Enable sqlalchemy
-  # TODO: check does the puppet tripleo::...::collectd::enable_sqlalchemy role
-  # do anything besides set up the config
-  # https://github.com/openstack/puppet-tripleo/blob/master/manifests/profile/base/metrics/collectd/sqlalchemy_collectd.pp
   when:
     - tripleo_collectd_enable_sqlalchemy|bool
   set_fact:
@@ -146,7 +126,7 @@
 
     - name: "Update sudoers file"
       when:
-        - (tripleo_collectd_sensubility_exec_sudo_rule != 'nil' )|default(false)
+        - (tripleo_collectd_sensubility_exec_sudo_rule | length > 0 )|default(false)
       block:
         - name: "Set sudoers path"
           set_fact:
@@ -158,13 +138,10 @@
             mode: 0750
             state: directory
 
-        - name: "Populate the file in sudoers.d/"
-          lineinfile:
+        - name: "Populate the file in {{ sensubility_sudoers_file }}"
+          copy:
+            content: "{{ tripleo_collectd_sensubility_exec_sudo_rule }}"
             dest: "{{ sensubility_sudoers_file }}"
-            state: present
-            line: "{{ tripleo_collectd_sensubility_exec_sudo_rule }}"
-            create: yes
-            owner: collectd
             mode: 0440
             validate: 'visudo -c -f %s'
 
@@ -182,13 +159,12 @@
             refresh: "{{ tripleo_collectd_container_health_check_refresh }}"
 
     - name: "Set the values for collectd-sensubility.conf"
-      # https://github.com/openstack/puppet-tripleo/blob/master/spec/fixtures/hieradata/step3.yaml
       set_fact:
         collectd_sensubility_log_file: "/var/log/collectd/sensubility.log"
         collectd_sensubility_log_level: "{{ tripleo_collectd_sensubility_log_level }}"
         collectd_sensubility_transport: "{{ tripleo_collectd_sensubility_transport }}"
         collectd_sensubility_connection: "{{ tripleo_collectd_sensubility_connection }}"
-        #collectd_sensubility_subscriptions:
+        collectd_sensubility_subscriptions: "{{ tripleo_collectd_sensubility_subscriptions }}"
         collectd_sensubility_keepalive_interval: "{{ tripleo_collectd_sensubility_keepalive_interval }}"
         collectd_sensubility_tmp_dir: "{{ tripleo_collectd_sensubility_tmp_dir }}"
         collectd_sensubility_shell_path: "{{ tripleo_collectd_sensubility_shell_path }}"
@@ -199,12 +175,45 @@
         collectd_sensubility_client_name: "{{ lookup('vars', 'fqdn_' + service_net_map[ (tripleo_role_name + 'MetricsQdrNetwork' )| snake_case] ) }}"
         collectd_sensubility_client_address: "{{ lookup('vars', service_net_map[( tripleo_role_name + 'MetricsQdrNetwork') | snake_case ] + '_ip' ) }}"
         collectd_sensubility_checks: "{{ tripleo_collectd_sensubility_checks | combine(healthcheck_check|default({})) }}"
-    # This may need to be {{ collectd_conf_output_dir }}/etc/collectd-sensubility.conf
-    - name: Render collectd-sensubility template
+
+    - name: "Create directory for collectd-sensubility.conf"
+      file:
+        path: "{{ collectd_conf_output_dir }}/../"
+        mode: 0750
+        state: directory
+
+    - name: "Render collectd-sensubility template in {{ collectd_conf_output_dir }}/../"
       template:
         src: collectd-sensubility.conf.j2
         dest: "{{ collectd_conf_output_dir }}/../collectd-sensubility.conf"
         mode: 0644
+
+- name: "Configure collectd to run libpodstats"
+  when:
+    - tripleo_collectd_enable_libpodstats
+  block:
+    - set_fact:
+        typesdb_libpodstats:
+          name: "libpodstats"
+          path: "{{ collectd_conf_output_dir }}"
+          types:
+            pod_cpu:
+              - ds_type: 'GAUGE'
+                min: 0
+                max: 100.1
+                ds_name: 'percent'
+              - ds_type: 'DERIVE'
+                min: 0
+                max: 'U'
+                ds_name: 'time'
+            pod_memory:
+              - ds_type: 'GAUGE'
+                min: 0
+                max: 281474976710656
+                ds_name: 'value'
+    - set_fact:
+        collectd_plugins: "{{ collectd_plugins | union(['libpodstats']) | unique }}"
+        collectd_typesdb_extra: "{{ collectd_typesdb_extra | default([]) | union([typesdb_libpodstats]) }}"
 
 - name: "Generate the collectd config files"
   include_role:

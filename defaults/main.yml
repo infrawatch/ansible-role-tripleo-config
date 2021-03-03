@@ -1,4 +1,19 @@
 ---
+# Copyright 2021 Red Hat, Inc.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
 # Corresponds to EndpointMap in THT
 # Mapping of service endpoint -> protocol. Typically set via parameter_defaults
 # in the resource registry.
@@ -160,7 +175,7 @@ tripleo_collectd_enable_sensubility: false
 # Corresponds to CollectdSensubilityExecSudoRule in THT
 # Given rule will be created in /etc/sudoers.d for sensubility to enable it
 # calling restricted commands via sensubility executor.
-tripleo_collectd_sensubility_exec_sudo_rule: nil
+tripleo_collectd_sensubility_exec_sudo_rule: ''
 
 # Corresponds to CollectdSensubilityLogLevel in THT
 # Use for override the default logging level (WARNING).
@@ -169,6 +184,8 @@ tripleo_collectd_sensubility_log_level: WARNING
 # Corresponds to CollectdSensubilityConnection in THT
 # URL to Sensu sever side
 tripleo_collectd_sensubility_connection: amqp://sensu:sensu@localhost:5672//sensu
+
+tripleo_collectd_sensubility_subscriptions: []
 
 # Corresponds to CollectdSensubilityKeepaliveInterval in THT
 # Interval in seconds for sending keepalive messages to Sensu server side.
@@ -234,3 +251,7 @@ tripleo_collectd_enable_stf: false
 # Corresponds to CollectdEnableMcelog in THT
 # Set to true to enable mcelog
 tripleo_collectd_enable_mcelog: false
+
+# Corresponds to CollectdEnableLibpodstats in THT
+# Set to true if collectd should run the libpodstats plugin
+tripleo_collectd_enable_libpodstats: false
