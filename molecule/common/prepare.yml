@@ -1,9 +1,0 @@
----
-- name: "Prepare the host for testing"
-  hosts: collectd-test
-  tasks:
-    - name: "Create a directory for the log file"
-      file:
-        path: /var/log/collectd/
-        state: directory
-        mode: 0776

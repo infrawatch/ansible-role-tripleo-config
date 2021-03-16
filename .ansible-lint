@@ -1,9 +1,0 @@
-skip_list:
-   - '102'  # No Jinja2 in when
-   - '106'  # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
-   - '303'  # systemctl used in place of systemd module
-   - '701'  # Role info should contain platforms
-warn_list:
-   - '204'  # Lines should be no longer than 160 chars
-   - '301'  # Commands should not change things if nothing needs doing
-   - '602'  # Don't compare to empty string
